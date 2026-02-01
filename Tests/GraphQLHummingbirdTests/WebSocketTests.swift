@@ -34,7 +34,7 @@ struct WebSocketTests {
         )
 
         let router = Router(context: TestWebSocketContext.self)
-        router.graphqlSubscribe(schema: schema, config: .init(subscriptionProtocols: [.websocket])) { _, _ in
+        router.graphqlSubscribe(schema: schema) { _, _ in
             EmptyContext()
         }
         let app = Application(
@@ -109,7 +109,7 @@ struct WebSocketTests {
         )
 
         let router = Router(context: TestWebSocketContext.self)
-        router.graphqlSubscribe(schema: schema, config: .init(subscriptionProtocols: [.websocket])) { _, _ in
+        router.graphqlSubscribe(schema: schema) { _, _ in
             EmptyContext()
         }
         let app = Application(
@@ -159,6 +159,47 @@ struct WebSocketTests {
                         Issue.record("Unrecognized message: \(message)")
                         break
                     }
+                }
+            }
+        }
+    }
+
+    @Test func badSubProtocolFailsToUpgrade() async throws {
+        let pubsub = SimplePubSub<String>()
+        let schema = try GraphQLSchema(
+            subscription: GraphQLObjectType(
+                name: "Subscription",
+                fields: [
+                    "hello": GraphQLField(
+                        type: GraphQLString,
+                        resolve: { source, _, _, _ in
+                            source as! String
+                        },
+                        subscribe: { _, _, _, _ in
+                            await pubsub.subscribe()
+                        }
+                    ),
+                ]
+            )
+        )
+
+        let router = Router(context: TestWebSocketContext.self)
+        router.graphqlSubscribe(schema: schema) { _, _ in
+            EmptyContext()
+        }
+        let app = Application(
+            router: Router(),
+            server: .http1WebSocketUpgrade(webSocketRouter: router),
+            configuration: .init(address: .hostname("127.0.0.1", port: 0))
+        )
+
+        _ = try await app.test(.live) { client in
+            await #expect(throws: Error.self) {
+                try await client.ws(
+                    "/graphql",
+                    configuration: .init(additionalHeaders: [.secWebSocketProtocol: "bad"])
+                ) { _, _, _ in
+                    // Should never enter
                 }
             }
         }
