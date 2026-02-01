@@ -5,6 +5,7 @@ import GraphQLTransportWS
 import GraphQLWS
 import Hummingbird
 import HummingbirdTesting
+import NIOFoundationCompat
 import Testing
 
 @Suite
