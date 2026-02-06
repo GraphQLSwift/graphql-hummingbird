@@ -45,7 +45,7 @@ extension GraphQLHandler {
             server.onMessage { message in
                 logger.trace("GraphQL server received: \(String(message))")
             }
-            server.auth(config.websocket.onWebsocketInit)
+            server.auth(config.websocket.onWebSocketInit)
         case .graphqlWs:
             // https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md
             let server = GraphQLWS.Server<WebSocketInit, AsyncThrowingStream<GraphQLResult, Error>>(
@@ -74,7 +74,7 @@ extension GraphQLHandler {
             server.onMessage { message in
                 logger.trace("GraphQL server received: \(String(message))")
             }
-            server.auth(config.websocket.onWebsocketInit)
+            server.auth(config.websocket.onWebSocketInit)
         }
         try await messenger.start()
     }

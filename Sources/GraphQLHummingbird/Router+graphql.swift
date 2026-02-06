@@ -24,7 +24,7 @@ public extension Router {
         _ path: RouterPath = "graphql",
         schema: GraphQLSchema,
         rootValue: any Sendable = (),
-        config: GraphQLConfig<WebSocketInit> = GraphQLConfig<EmptyWebsocketInit>(),
+        config: GraphQLConfig<WebSocketInit> = GraphQLConfig<EmptyWebSocketInit>(),
         computeContext: @Sendable @escaping (Request, Context) async throws -> GraphQLContext
     ) -> Self {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#request
@@ -90,7 +90,7 @@ public extension Router where Context: WebSocketRequestContext {
         _ path: RouterPath = "graphql",
         schema: GraphQLSchema,
         rootValue: any Sendable = (),
-        config: GraphQLConfig<WebSocketInit> = GraphQLConfig<EmptyWebsocketInit>(),
+        config: GraphQLConfig<WebSocketInit> = GraphQLConfig<EmptyWebSocketInit>(),
         computeContext: @Sendable @escaping (Request, Context) async throws -> GraphQLContext
     ) -> Self {
         let handler = GraphQLHandler<Context, GraphQLContext, WebSocketInit>(
