@@ -52,9 +52,6 @@ public extension Router {
             }
 
             // Normal GET request handling
-            guard config.allowGet else {
-                throw HTTPError(.methodNotAllowed, message: "GET requests are disallowed")
-            }
             return try await handler.handleGet(request: request, context: context)
         }
 

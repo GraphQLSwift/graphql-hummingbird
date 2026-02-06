@@ -7,6 +7,10 @@ import NIOCore
 extension GraphQLHandler {
     /// https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#get
     func handleGet(request: Request, context: Context) async throws -> Response {
+        guard config.allowGet else {
+            throw HTTPError(.methodNotAllowed, message: "GET requests are disallowed")
+        }
+
         // Decode query parameters as GraphQLRequest
         let graphQLRequest = try request.uri.decodeQuery(as: GraphQLRequest.self, context: context)
 
