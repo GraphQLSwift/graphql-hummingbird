@@ -34,7 +34,7 @@ struct WebSocketTests {
         )
 
         let router = Router(context: TestWebSocketContext.self)
-        router.graphqlSubscribe(schema: schema) { _, _ in
+        router.graphqlWebSocket(schema: schema) { _, _ in
             EmptyContext()
         }
         let app = Application(
@@ -109,7 +109,7 @@ struct WebSocketTests {
         )
 
         let router = Router(context: TestWebSocketContext.self)
-        router.graphqlSubscribe(schema: schema) { _, _ in
+        router.graphqlWebSocket(schema: schema) { _, _ in
             EmptyContext()
         }
         let app = Application(
@@ -184,7 +184,7 @@ struct WebSocketTests {
         )
 
         let router = Router(context: TestWebSocketContext.self)
-        router.graphqlSubscribe(schema: schema) { _, _ in
+        router.graphqlWebSocket(schema: schema) { _, _ in
             EmptyContext()
         }
         let app = Application(

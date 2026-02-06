@@ -83,7 +83,7 @@ public extension Router where Context: WebSocketRequestContext {
     ///   - config: GraphQL Handler configuration options. See type documentation for details. Note that all non-WebSocket values are ignored.
     ///   - computeContext: A closure used to compute the GraphQL context from incoming requests. This must be provided.
     @discardableResult
-    func graphqlSubscribe<
+    func graphqlWebSocket<
         GraphQLContext: Sendable,
         WebSocketInit: Equatable & Codable & Sendable
     >(
