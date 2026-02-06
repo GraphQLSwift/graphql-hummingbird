@@ -17,18 +17,15 @@ public extension Router {
     ///   - config: GraphQL Handler configuration options. See type documentation for details.
     ///   - computeContext: A closure used to compute the GraphQL context from incoming requests. This must be provided.
     @discardableResult
-    func graphql<
-        GraphQLContext: Sendable,
-        WebSocketInit: Equatable & Codable & Sendable
-    >(
+    func graphql<GraphQLContext: Sendable>(
         _ path: RouterPath = "graphql",
         schema: GraphQLSchema,
         rootValue: any Sendable = (),
-        config: GraphQLConfig<WebSocketInit> = GraphQLConfig<EmptyWebSocketInit>(),
+        config: GraphQLConfig<EmptyWebSocketInit> = .init(),
         computeContext: @Sendable @escaping (Request, Context) async throws -> GraphQLContext
     ) -> Self {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#request
-        let handler = GraphQLHandler<Context, GraphQLContext, WebSocketInit>(
+        let handler = GraphQLHandler<Context, GraphQLContext, EmptyWebSocketInit>(
             schema: schema,
             rootValue: rootValue,
             config: config,
@@ -42,7 +39,8 @@ public extension Router {
                 switch config.ide.type {
                 case .graphiql:
                     let url = request.uri.path
-                    let subscriptionUrl = config.subscriptionProtocols.contains(.websocket) ? url.replacingOccurrences(of: "http://", with: "ws://").replacingOccurrences(of: "https://", with: "wss://") : nil
+                    // Assume that we have a subscription websocket at the same route.
+                    let subscriptionUrl = url.replacingOccurrences(of: "http://", with: "ws://").replacingOccurrences(of: "https://", with: "wss://")
                     return try await GraphiQLHandler.respond(
                         url: url,
                         subscriptionUrl: subscriptionUrl
