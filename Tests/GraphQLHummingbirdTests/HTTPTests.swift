@@ -153,6 +153,33 @@ struct HTTPTests {
         }
     }
 
+    @Test func jsonContentTypeHeader() async throws {
+        let router = Router()
+        router.graphql(schema: helloWorldSchema) { _, _ in
+            EmptyContext()
+        }
+        let app = Application(router: router)
+
+        try await app.test(.router) { client in
+            try await client.execute(
+                uri: "/graphql",
+                method: .post,
+                headers: [
+                    .accept: MediaType.applicationJsonGraphQL.description,
+                    .contentType: MediaType.applicationJson.description,
+                ],
+                body: .init(data: JSONEncoder().encode(GraphQLRequest(query: "{ hello }")))
+            ) { response in
+                #expect(response.status == .ok)
+                #expect(response.headers[.contentType] == "application/graphql-response+json; charset=utf-8")
+
+                let result = try JSONDecoder().decode(GraphQLResult.self, from: response.body)
+                #expect(result.data?["hello"] == "World")
+                #expect(result.errors.isEmpty)
+            }
+        }
+    }
+
     @Test func noAcceptHeader() async throws {
         let router = Router()
         router.graphql(schema: helloWorldSchema) { _, _ in
