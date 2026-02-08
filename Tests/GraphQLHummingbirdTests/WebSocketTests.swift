@@ -206,8 +206,6 @@ struct WebSocketTests {
     }
 }
 
-struct EmptyContext: Sendable {}
-
 struct TestWebSocketContext: WebSocketRequestContext, RequestContext {
     typealias GraphQLContext = EmptyContext
     var coreContext: Hummingbird.CoreRequestContextStorage

@@ -21,7 +21,7 @@ struct HTTPTests {
             try await client.execute(
                 uri: "/graphql",
                 method: .post,
-                headers: defaultHeaders,
+                headers: jsonGraphQLHeaders,
                 body: .init(data: JSONEncoder().encode(GraphQLRequest(query: "{ hello }")))
             ) { response in
                 #expect(response.status == .ok)
@@ -65,7 +65,7 @@ struct HTTPTests {
             try await client.execute(
                 uri: "/graphql",
                 method: .post,
-                headers: defaultHeaders,
+                headers: jsonGraphQLHeaders,
                 body: .init(data: JSONEncoder().encode(GraphQLRequest(
                     query: "query Greet($name: String) { greet(name: $name) }",
                     variables: ["name": "Alice"]
@@ -113,7 +113,7 @@ struct HTTPTests {
             try await client.execute(
                 uri: "/graphql",
                 method: .post,
-                headers: defaultHeaders,
+                headers: jsonGraphQLHeaders,
                 body: .init(data: JSONEncoder().encode(GraphQLRequest(query: "{ contextMessage }")))
             ) { response in
                 #expect(response.status == .ok)
@@ -275,7 +275,7 @@ struct HTTPTests {
             try await client.execute(
                 uri: "/graphql?query=%7Bhello%7D",
                 method: .get,
-                headers: defaultHeaders
+                headers: jsonGraphQLHeaders
             ) { response in
                 #expect(response.status == .ok)
 
@@ -302,7 +302,7 @@ struct HTTPTests {
             try await client.execute(
                 uri: "/graphql?query=%7Bhello%7D",
                 method: .get,
-                headers: defaultHeaders
+                headers: jsonGraphQLHeaders
             ) { response in
                 #expect(response.status == .methodNotAllowed)
             }
@@ -348,25 +348,4 @@ struct HTTPTests {
             }
         }
     }
-
-    let defaultHeaders: HTTPFields = [
-        .accept: MediaType.applicationJsonGraphQL.description,
-        .contentType: MediaType.applicationJsonGraphQL.description,
-    ]
-
-    let helloWorldSchema = try! GraphQLSchema(
-        query: GraphQLObjectType(
-            name: "Query",
-            fields: [
-                "hello": GraphQLField(
-                    type: GraphQLString,
-                    resolve: { _, _, _, _ in
-                        "World"
-                    }
-                ),
-            ]
-        )
-    )
-
-    struct EmptyContext: Sendable {}
 }
