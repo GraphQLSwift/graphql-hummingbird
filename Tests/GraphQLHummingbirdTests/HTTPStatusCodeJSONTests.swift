@@ -181,12 +181,12 @@ struct HTTPStatusCodeJSONTests {
                 uri: "/graphql",
                 method: .post,
                 headers: jsonGraphQLHeaders,
-                body: .init(data: JSONEncoder().encode(GraphQLRequest(query: "{ error }")))
+                body: .init(data: defaultJSONEncoder.encode(GraphQLRequest(query: "{ error }")))
             ) { response in
                 #expect(response.status == .ok)
                 #expect(response.headers[.contentType] == "application/graphql-response+json; charset=utf-8")
 
-                let result = try JSONDecoder().decode(GraphQLResult.self, from: response.body)
+                let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
                 #expect(!result.errors.isEmpty)
                 #expect(result.errors.first?.message == "Something went wrong")
             }

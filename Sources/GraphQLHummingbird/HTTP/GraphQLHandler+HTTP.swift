@@ -44,13 +44,13 @@ extension GraphQLHandler {
         switch mediaType {
         case .applicationJson, .applicationJsonGraphQL:
             do {
-                graphQLRequest = try await JSONDecoder().decode(GraphQLRequest.self, from: request, context: context)
+                graphQLRequest = try await config.coders.jsonDecoder.decode(GraphQLRequest.self, from: request, context: context)
             } catch {
                 throw HTTPError(.badRequest, message: error.localizedDescription)
             }
         case .applicationUrlEncoded:
             do {
-                graphQLRequest = try await URLEncodedFormDecoder().decode(GraphQLRequest.self, from: request, context: context)
+                graphQLRequest = try await config.coders.urlEncodedFormDecoder.decode(GraphQLRequest.self, from: request, context: context)
             } catch {
                 throw HTTPError(.badRequest, message: error.localizedDescription)
             }
@@ -109,19 +109,19 @@ extension GraphQLHandler {
         // Try to respond with the best matching media type, in order
         for mediaType in acceptedTypes {
             if MediaType.applicationJsonGraphQL.isType(mediaType) {
-                return try GraphQLJSONEncoder().encode(result, from: request, context: context)
+                return try config.coders.graphQLJSONEncoder.encode(result, from: request, context: context)
             }
             if MediaType.applicationJson.isType(mediaType) {
-                return try JSONEncoder().encode(result, from: request, context: context)
+                return try config.coders.jsonEncoder.encode(result, from: request, context: context)
             }
             if MediaType.applicationUrlEncoded.isType(mediaType) {
-                return try URLEncodedFormEncoder().encode(result, from: request, context: context)
+                return try config.coders.urlEncodedFormEncoder.encode(result, from: request, context: context)
             }
         }
 
         // Use the default if configured to do so
         if config.allowMissingAcceptHeader {
-            return try GraphQLJSONEncoder().encode(result, from: request, context: context)
+            return try config.coders.graphQLJSONEncoder.encode(result, from: request, context: context)
         }
 
         // Fail

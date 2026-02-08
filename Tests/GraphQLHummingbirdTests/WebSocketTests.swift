@@ -11,8 +11,8 @@ import Testing
 
 @Suite
 struct WebSocketTests {
-    let decoder = JSONDecoder()
-    let encoder = GraphQLJSONEncoder()
+    let decoder = defaultJSONDecoder
+    let encoder = defaultGraphQLJSONEncoder
 
     @Test func subscription() async throws {
         let pubsub = SimplePubSub<String>()
