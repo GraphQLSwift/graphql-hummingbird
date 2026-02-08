@@ -127,3 +127,25 @@ let app = Application(
 ```
 
 The example above follows Hummingbird best practices when it uses a separate router for HTTP and WebSocket requests. For more details, see the [Hummingbird WebSocket documentation](https://docs.hummingbird.codes/2.0/documentation/hummingbird/websocketserverupgrade#Overview).
+
+### Custom Encoding/Decoding
+
+You can set custom encoders and decoders using the `Config.coders` argument:
+
+```swift
+// Configure custom JSON encoder
+let graphQLJSONEncoder = GraphQLJSONEncoder()
+graphQLJSONEncoder.dateEncodingStrategy = .millisecondsSince1970
+
+// Inject it using the `config.coders` argument
+router.graphql(
+    schema: schema,
+    config: .init(
+        coders: .init(graphQLJSONEncoder: graphQLJSONEncoder)
+    )
+) { _, _ in
+    GraphQLContext()
+}
+```
+
+Like [Hummingbird](https://docs.hummingbird.codes/2.0/documentation/hummingbird/responseencoding#Date-encoding), all default GraphQL encoders and decoders use the standard settings with ISO8601 date formatting.
