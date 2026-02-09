@@ -20,7 +20,7 @@ public extension RouterMethods {
         schema: GraphQLSchema,
         rootValue: any Sendable = (),
         config: GraphQLConfig<EmptyWebSocketInit> = .init(),
-        computeContext: @Sendable @escaping (Request, Context) async throws -> GraphQLContext
+        computeContext: @Sendable @escaping (GraphQLContextComputationInputs<Context>) async throws -> GraphQLContext
     ) -> Self {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#request
         let handler = GraphQLHandler<Context, GraphQLContext, EmptyWebSocketInit>(
@@ -84,7 +84,7 @@ public extension RouterMethods where Context: WebSocketRequestContext {
         schema: GraphQLSchema,
         rootValue: any Sendable = (),
         config: GraphQLConfig<WebSocketInit> = GraphQLConfig<EmptyWebSocketInit>(),
-        computeContext: @Sendable @escaping (Request, Context) async throws -> GraphQLContext
+        computeContext: @Sendable @escaping (GraphQLContextComputationInputs<Context>) async throws -> GraphQLContext
     ) -> Self {
         let handler = GraphQLHandler<Context, GraphQLContext, WebSocketInit>(
             schema: schema,
@@ -96,12 +96,11 @@ public extension RouterMethods where Context: WebSocketRequestContext {
         ws(path, shouldUpgrade: { request, _ in
             try handler.shouldUpgrade(request: request)
         }) { inbound, outbound, context in
-            let graphQLContext = try await computeContext(context.request, context.requestContext)
             let subProtocol = try handler.negotiateSubProtocol(request: context.request)
             try await handler.handleWebSocket(
                 inbound: inbound,
                 outbound: outbound,
-                graphqlContext: graphQLContext,
+                context: context,
                 subProtocol: subProtocol,
                 logger: context.logger
             )

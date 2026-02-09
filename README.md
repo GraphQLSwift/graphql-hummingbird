@@ -67,7 +67,7 @@ struct GraphQLContext: Sendable {}
 
 // Create router and register GraphQL
 let router = Router()
-router.graphql(schema: schema) { _, _ in
+router.graphql(schema: schema) { _ in
     return GraphQLContext()
 }
 
@@ -98,6 +98,21 @@ Response:
 
 See the `graphql` function documentation for advanced configuration options.
 
+### Computing GraphQL Context
+
+The required closure in the `graphql` function is used to compute the `GraphQLContext` object, which is injected into each GraphQL resolver. The `inputs` argument passes in data from the request so that the Context can be created dynamically:
+
+```swift
+router.graphql(schema: schema) { inputs in
+    return GraphQLContext(
+        userID: inputs.hummingbirdContext.userID,
+        logger: inputs.hummingbirdContext.logger,
+        debug: inputs.hummingbirdRequest.headers[.init("debug")!] != nil,
+        operationName: inputs.graphQLRequest.operationName
+    )
+}
+```
+
 ### WebSockets
 
 Subscription support via WebSockets can be enabled by calling the `graphqlWebSocket` function on a `Router` whose context conforms to `WebSocketRequestContext`, from the `HummingbirdWebSocket` package:
@@ -113,7 +128,7 @@ struct MyWebSocketContext: WebSocketRequestContext, RequestContext {
 }
 
 let router = Router(context: MyContext.self)
-router.graphql(schema: schema) { _, _ in
+router.graphql(schema: schema) { _ in
     GraphQLContext()
 }
 let webSocketRouter = Router(context: MyWebSocketContext.self)
@@ -143,7 +158,7 @@ router.graphql(
     config: .init(
         coders: .init(graphQLJSONEncoder: graphQLJSONEncoder)
     )
-) { _, _ in
+) { _ in
     GraphQLContext()
 }
 ```

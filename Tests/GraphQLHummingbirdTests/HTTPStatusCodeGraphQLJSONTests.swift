@@ -16,7 +16,7 @@ struct HTTPStatusCodeGraphQLJSONTests {
     @Test func parsingFailureGivesBadRequest() async throws {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#json-parsing-failure-1
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -36,7 +36,7 @@ struct HTTPStatusCodeGraphQLJSONTests {
     @Test func invalidParametersGivesBadRequest() async throws {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#invalid-parameters-1
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -56,7 +56,7 @@ struct HTTPStatusCodeGraphQLJSONTests {
     @Test func documentParsingFailureGivesBadRequest() async throws {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#document-parsing-failure-1
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -76,7 +76,7 @@ struct HTTPStatusCodeGraphQLJSONTests {
     @Test func documentValidationFailureGivesBadRequest() async throws {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#document-validation-failure-1
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -97,7 +97,7 @@ struct HTTPStatusCodeGraphQLJSONTests {
     @Test func operationCannotBeDeterminedGivesBadRequest() async throws {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#operation-cannot-be-determined-1
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -136,7 +136,7 @@ struct HTTPStatusCodeGraphQLJSONTests {
             )
         )
         let router = Router()
-        router.graphql(schema: schema) { _, _ in
+        router.graphql(schema: schema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -171,7 +171,7 @@ struct HTTPStatusCodeGraphQLJSONTests {
             )
         )
         let router = Router()
-        router.graphql(schema: schema) { _, _ in
+        router.graphql(schema: schema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)

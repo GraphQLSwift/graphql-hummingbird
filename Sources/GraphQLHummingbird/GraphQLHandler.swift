@@ -9,5 +9,13 @@ struct GraphQLHandler<
     let schema: GraphQLSchema
     let rootValue: any Sendable
     let config: GraphQLConfig<WebSocketInit>
-    let computeContext: @Sendable (Request, Context) async throws -> GraphQLContext
+    let computeContext: @Sendable (GraphQLContextComputationInputs<Context>) async throws -> GraphQLContext
+}
+
+public struct GraphQLContextComputationInputs<
+    Context: RequestContext
+>: Sendable {
+    public let hummingbirdRequest: Request
+    public let hummingbirdContext: Context
+    public let graphQLRequest: GraphQLRequest
 }

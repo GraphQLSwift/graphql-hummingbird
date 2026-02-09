@@ -12,7 +12,7 @@ import Testing
 struct HTTPTests {
     @Test func query() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -56,7 +56,7 @@ struct HTTPTests {
         )
 
         let router = Router()
-        router.graphql(schema: schema) { _, _ in
+        router.graphql(schema: schema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -104,7 +104,7 @@ struct HTTPTests {
         )
 
         let router = Router()
-        router.graphql(schema: schema) { _, _ in
+        router.graphql(schema: schema) { _ in
             Context(message: "Hello from context!")
         }
         let app = Application(router: router)
@@ -128,7 +128,7 @@ struct HTTPTests {
 
     @Test func jsonAcceptHeader() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -155,7 +155,7 @@ struct HTTPTests {
 
     @Test func jsonContentTypeHeader() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -182,7 +182,7 @@ struct HTTPTests {
 
     @Test func noAcceptHeader() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -203,7 +203,7 @@ struct HTTPTests {
 
     @Test func defaultAcceptHeader() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema, config: .init(allowMissingAcceptHeader: true)) { _, _ in
+        router.graphql(schema: helloWorldSchema, config: .init(allowMissingAcceptHeader: true)) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -229,7 +229,7 @@ struct HTTPTests {
 
     @Test func allowGetRequest() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -256,7 +256,7 @@ struct HTTPTests {
             config: .init(
                 allowGet: false
             )
-        ) { _, _ in
+        ) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -274,7 +274,7 @@ struct HTTPTests {
 
     @Test func graphiql() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema) { _, _ in
+        router.graphql(schema: helloWorldSchema) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -294,7 +294,7 @@ struct HTTPTests {
 
     @Test func graphiqlSubscription() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema, config: .init(subscriptionProtocols: [.websocket])) { _, _ in
+        router.graphql(schema: helloWorldSchema, config: .init(subscriptionProtocols: [.websocket])) { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -321,7 +321,7 @@ struct HTTPTests {
             config: .init(
                 coders: .init(graphQLJSONEncoder: graphQLJSONEncoder)
             )
-        ) { _, _ in
+        ) { _ in
             EmptyContext()
         }
         let app = Application(router: router)

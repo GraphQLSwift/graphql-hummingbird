@@ -42,11 +42,11 @@ struct HelloWorld {
         )
 
         let router = Router(context: HummingbirdContext.self)
-        router.graphql(schema: schema, config: .init(allowMissingAcceptHeader: true)) { _, _ in
+        router.graphql(schema: schema, config: .init(allowMissingAcceptHeader: true)) { _ in
             GraphQLContext()
         }
         let webSocketRouter = Router(context: HummingbirdWebSocketContext.self)
-        webSocketRouter.graphqlWebSocket(schema: schema) { _, _ in
+        webSocketRouter.graphqlWebSocket(schema: schema) { _ in
             GraphQLContext()
         }
         let app = Application(

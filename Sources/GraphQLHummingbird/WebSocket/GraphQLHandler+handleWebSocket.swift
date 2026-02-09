@@ -6,11 +6,11 @@ import Hummingbird
 import HummingbirdWebSocket
 import Logging
 
-extension GraphQLHandler {
+extension GraphQLHandler where Context: WebSocketRequestContext {
     func handleWebSocket(
         inbound: WebSocketInboundStream,
         outbound: WebSocketOutboundWriter,
-        graphqlContext: GraphQLContext,
+        context: WebSocketRouterContext<Context>,
         subProtocol: WebSocketSubProtocol,
         logger: Logger
     ) async throws {
@@ -22,21 +22,33 @@ extension GraphQLHandler {
             let server = GraphQLTransportWS.Server<WebSocketInit, AsyncThrowingStream<GraphQLResult, Error>>(
                 messenger: messenger,
                 onExecute: { graphQLRequest in
-                    try await graphql(
+                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context>(
+                        hummingbirdRequest: context.request,
+                        hummingbirdContext: context.requestContext,
+                        graphQLRequest: graphQLRequest
+                    )
+                    let graphQLContext = try await computeContext(graphQLContextComputationInputs)
+                    return try await graphql(
                         schema: self.schema,
                         request: graphQLRequest.query,
                         rootValue: self.rootValue,
-                        context: graphqlContext,
+                        context: graphQLContext,
                         variableValues: graphQLRequest.variables,
                         operationName: graphQLRequest.operationName
                     )
                 },
                 onSubscribe: { graphQLRequest in
-                    try await graphqlSubscribe(
+                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context>(
+                        hummingbirdRequest: context.request,
+                        hummingbirdContext: context.requestContext,
+                        graphQLRequest: graphQLRequest
+                    )
+                    let graphQLContext = try await computeContext(graphQLContextComputationInputs)
+                    return try await graphqlSubscribe(
                         schema: self.schema,
                         request: graphQLRequest.query,
                         rootValue: self.rootValue,
-                        context: graphqlContext,
+                        context: graphQLContext,
                         variableValues: graphQLRequest.variables,
                         operationName: graphQLRequest.operationName
                     ).get()
@@ -51,21 +63,33 @@ extension GraphQLHandler {
             let server = GraphQLWS.Server<WebSocketInit, AsyncThrowingStream<GraphQLResult, Error>>(
                 messenger: messenger,
                 onExecute: { graphQLRequest in
-                    try await graphql(
+                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context>(
+                        hummingbirdRequest: context.request,
+                        hummingbirdContext: context.requestContext,
+                        graphQLRequest: graphQLRequest
+                    )
+                    let graphQLContext = try await computeContext(graphQLContextComputationInputs)
+                    return try await graphql(
                         schema: self.schema,
                         request: graphQLRequest.query,
                         rootValue: self.rootValue,
-                        context: graphqlContext,
+                        context: graphQLContext,
                         variableValues: graphQLRequest.variables,
                         operationName: graphQLRequest.operationName
                     )
                 },
                 onSubscribe: { graphQLRequest in
-                    try await graphqlSubscribe(
+                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context>(
+                        hummingbirdRequest: context.request,
+                        hummingbirdContext: context.requestContext,
+                        graphQLRequest: graphQLRequest
+                    )
+                    let graphQLContext = try await computeContext(graphQLContextComputationInputs)
+                    return try await graphqlSubscribe(
                         schema: self.schema,
                         request: graphQLRequest.query,
                         rootValue: self.rootValue,
-                        context: graphqlContext,
+                        context: graphQLContext,
                         variableValues: graphQLRequest.variables,
                         operationName: graphQLRequest.operationName
                     ).get()
