@@ -32,7 +32,7 @@ extension GraphQLHandler where Context: WebSocketRequestContext {
             let server = GraphQLTransportWS.Server<WebSocketInit, WebSocketInitResult, AsyncThrowingStream<GraphQLResult, Error>>(
                 messenger: messenger,
                 onInit: { initPayload in
-                    try await config.websocket.onWebSocketInit(initPayload)
+                    try await config.websocket.onWebSocketInit(initPayload, context.request, context.requestContext)
                 },
                 onExecute: { graphQLRequest, initResult in
                     let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context, WebSocketInitResult>(
@@ -75,7 +75,7 @@ extension GraphQLHandler where Context: WebSocketRequestContext {
             let server = GraphQLWS.Server<WebSocketInit, WebSocketInitResult, AsyncThrowingStream<GraphQLResult, Error>>(
                 messenger: messenger,
                 onInit: { initPayload in
-                    try await config.websocket.onWebSocketInit(initPayload)
+                    try await config.websocket.onWebSocketInit(initPayload, context.request, context.requestContext)
                 },
                 onExecute: { graphQLRequest, initResult in
                     let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context, WebSocketInitResult>(
