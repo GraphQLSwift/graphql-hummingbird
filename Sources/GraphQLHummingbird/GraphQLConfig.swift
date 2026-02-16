@@ -46,11 +46,11 @@ public struct GraphQLConfig<
     }
 
     public struct Coders: Sendable {
-        public let graphQLJSONEncoder: GraphQLJSONEncoder
-        public let jsonDecoder: JSONDecoder
-        public let jsonEncoder: JSONEncoder
-        public let urlEncodedFormDecoder: URLEncodedFormDecoder
-        public let urlEncodedFormEncoder: URLEncodedFormEncoder
+        let graphQLJSONEncoder: GraphQLJSONEncoder
+        let jsonDecoder: JSONDecoder
+        let jsonEncoder: JSONEncoder
+        let urlEncodedFormDecoder: URLEncodedFormDecoder
+        let urlEncodedFormEncoder: URLEncodedFormEncoder
 
         public init(
             graphQLJSONEncoder: GraphQLJSONEncoder? = nil,
