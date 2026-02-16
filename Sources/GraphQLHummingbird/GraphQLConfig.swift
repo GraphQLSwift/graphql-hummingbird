@@ -45,6 +45,7 @@ public struct GraphQLConfig<
         self.websocket = websocket
     }
 
+    /// A collection of encoders and decoders used by the GraphQL system
     public struct Coders: Sendable {
         let graphQLJSONEncoder: GraphQLJSONEncoder
         let jsonDecoder: JSONDecoder
@@ -67,6 +68,7 @@ public struct GraphQLConfig<
         }
     }
 
+    /// An embeddable GraphQL IDE
     public struct IDE: Sendable, Equatable {
         /// GraphiQL: https://github.com/graphql/graphiql
         public static var graphiql: Self {
@@ -85,6 +87,7 @@ public struct GraphQLConfig<
         }
     }
 
+    /// A GraphQL subscription implementation
     public struct SubscriptionProtocol: Sendable, Hashable {
         /// Expose GraphQL subscriptions over WebSockets
         public static var websocket: Self {
@@ -97,6 +100,7 @@ public struct GraphQLConfig<
         }
     }
 
+    /// WebSocket configuration
     public struct WebSocket: Sendable {
         let onWebSocketInit: @Sendable (WebSocketInit, Request, Context) async throws -> WebSocketInitResult
 
