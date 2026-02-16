@@ -16,8 +16,7 @@ extension GraphQLHandler where Context: WebSocketRequestContext {
     ) async throws {
         let messenger = WebSocketMessenger(outbound: outbound, logger: logger)
 
-        // TODO: Make maxSize configurable
-        let messageStream = inbound.messages(maxSize: 1024 * 1024).compactMap { message -> String? in
+        let messageStream = inbound.messages(maxSize: context.requestContext.maxUploadSize).compactMap { message -> String? in
             // TODO: Add binary support
             guard case let .text(text) = message else {
                 return nil
