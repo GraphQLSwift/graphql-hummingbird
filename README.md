@@ -141,6 +141,20 @@ let app = Application(
 
 The example above follows Hummingbird best practices when it uses a separate router for HTTP and WebSocket requests. For more details, see the [Hummingbird WebSocket documentation](https://docs.hummingbird.codes/2.0/documentation/hummingbird/websocketserverupgrade#Overview).
 
+### Graphiti
+
+If using Graphiti to build your GraphQL schema, you must provide an instance of the `Resolver` to the `rootValue` argument. For example:
+
+```swift
+let graphqlSchema: Graphiti.Schema<Resolver, Context> = try graphqlSchema()
+router.graphql(
+    schema: graphqlSchema.schema,
+    rootValue: Resolver() // This must be included
+) { _ in
+    Context()
+}
+```
+
 ### Custom Encoding/Decoding
 
 You can set custom encoders and decoders using the `Config.coders` argument:
