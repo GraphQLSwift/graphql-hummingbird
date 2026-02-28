@@ -35,6 +35,8 @@ Then add it to your target:
 
 ## Usage
 
+To use this package, you must already have a GraphQL schema. You can use [graphql-generator](https://github.com/GraphQLSwift/graphql-generator), [Graphiti](https://github.com/GraphQLSwift/Graphiti), or [GraphQL](https://github.com/GraphQLSwift/GraphQL) to construct one.
+
 See [the HelloWorld project](https://github.com/GraphQLSwift/graphql-hummingbird/tree/main/Examples/HelloWorld) for a full working example.
 
 ### Basic Example
@@ -45,7 +47,6 @@ import GraphQLHummingbird
 import Hummingbird
 
 // Define your GraphQL schema
-// To construct schemas, consider using `Graphiti` or `graphql-generator`
 let schema = try GraphQLSchema(
     query: GraphQLObjectType(
         name: "Query",
@@ -140,6 +141,22 @@ let app = Application(
 ```
 
 The example above follows Hummingbird best practices when it uses a separate router for HTTP and WebSocket requests. For more details, see the [Hummingbird WebSocket documentation](https://docs.hummingbird.codes/2.0/documentation/hummingbird/websocketserverupgrade#Overview).
+
+[`graphql-ws`](https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md) and [`graphql-transport-ws`](https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md) subprotocols are supported.
+
+### Graphiti
+
+If using Graphiti to build your GraphQL schema, you must provide an instance of the `Resolver` to the `rootValue` argument. For example:
+
+```swift
+let graphqlSchema: Graphiti.Schema<Resolver, Context> = try graphqlSchema()
+router.graphql(
+    schema: graphqlSchema.schema,
+    rootValue: Resolver() // This must be included
+) { _ in
+    Context()
+}
+```
 
 ### Custom Encoding/Decoding
 
