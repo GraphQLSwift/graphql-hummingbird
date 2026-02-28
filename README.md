@@ -35,6 +35,8 @@ Then add it to your target:
 
 ## Usage
 
+To use this package, you must already have a GraphQL schema. You can use [graphql-generator](https://github.com/GraphQLSwift/graphql-generator), [Graphiti](https://github.com/GraphQLSwift/Graphiti), or [GraphQL](https://github.com/GraphQLSwift/GraphQL) to construct one.
+
 See [the HelloWorld project](https://github.com/GraphQLSwift/graphql-hummingbird/tree/main/Examples/HelloWorld) for a full working example.
 
 ### Basic Example
@@ -45,7 +47,6 @@ import GraphQLHummingbird
 import Hummingbird
 
 // Define your GraphQL schema
-// To construct schemas, consider using `Graphiti` or `graphql-generator`
 let schema = try GraphQLSchema(
     query: GraphQLObjectType(
         name: "Query",
