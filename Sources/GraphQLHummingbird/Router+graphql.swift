@@ -2,7 +2,7 @@ import GraphQL
 import Hummingbird
 import HummingbirdWebSocket
 
-public extension RouterMethods {
+extension RouterMethods {
     /// Registers graphql routes that respond using the provided schema.
     ///
     /// The resulting routes adhere to the [GraphQL over HTTP spec](https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md).
@@ -15,12 +15,14 @@ public extension RouterMethods {
     ///   - config: GraphQL Handler configuration options. See type documentation for details.
     ///   - computeContext: A closure used to compute the GraphQL context from incoming requests. This must be provided.
     @discardableResult
-    func graphql<GraphQLContext: Sendable>(
+    public func graphql<GraphQLContext: Sendable>(
         _ path: RouterPath = "graphql",
         schema: GraphQLSchema,
         rootValue: any Sendable = (),
         config: GraphQLConfig<Context, EmptyWebSocketInit, Void> = .init(),
-        computeContext: @Sendable @escaping (GraphQLContextComputationInputs<Context, Void>) async throws -> GraphQLContext
+        computeContext:
+            @Sendable @escaping (GraphQLContextComputationInputs<Context, Void>) async throws ->
+            GraphQLContext
     ) -> Self {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#request
         let handler = GraphQLHandler<Context, GraphQLContext, EmptyWebSocketInit, Void>(
@@ -38,7 +40,8 @@ public extension RouterMethods {
                 case .graphiql:
                     let url = request.uri.path
                     // Since we cannot know if websockets has been registered, assume we have a websocket at the same route.
-                    let subscriptionUrl = url.replacingOccurrences(of: "http://", with: "ws://").replacingOccurrences(of: "https://", with: "wss://")
+                    let subscriptionUrl = url.replacingOccurrences(of: "http://", with: "ws://")
+                        .replacingOccurrences(of: "https://", with: "wss://")
                     return try await GraphiQLHandler.respond(
                         url: url,
                         subscriptionUrl: subscriptionUrl
@@ -61,7 +64,7 @@ public extension RouterMethods {
     }
 }
 
-public extension RouterMethods where Context: WebSocketRequestContext {
+extension RouterMethods where Context: WebSocketRequestContext {
     /// Registers a graphql websocket route that responds using the provided schema.
     ///
     /// WebSocket requests support the
@@ -76,7 +79,7 @@ public extension RouterMethods where Context: WebSocketRequestContext {
     ///   - config: GraphQL Handler configuration options. See type documentation for details. Note that all non-WebSocket values are ignored.
     ///   - computeContext: A closure used to compute the GraphQL context from incoming requests. This must be provided.
     @discardableResult
-    func graphqlWebSocket<
+    public func graphqlWebSocket<
         GraphQLContext: Sendable,
         WebSocketInit: Equatable & Codable & Sendable,
         WebSocketInitResult: Sendable
@@ -85,7 +88,9 @@ public extension RouterMethods where Context: WebSocketRequestContext {
         schema: GraphQLSchema,
         rootValue: any Sendable = (),
         config: GraphQLConfig<Context, WebSocketInit, WebSocketInitResult>,
-        computeContext: @Sendable @escaping (GraphQLContextComputationInputs<Context, WebSocketInitResult>) async throws -> GraphQLContext
+        computeContext:
+            @Sendable @escaping (GraphQLContextComputationInputs<Context, WebSocketInitResult>)
+            async throws -> GraphQLContext
     ) -> Self {
         let handler = GraphQLHandler<Context, GraphQLContext, WebSocketInit, WebSocketInitResult>(
             schema: schema,
@@ -94,9 +99,12 @@ public extension RouterMethods where Context: WebSocketRequestContext {
             computeContext: computeContext
         )
 
-        ws(path, shouldUpgrade: { request, _ in
-            try handler.shouldUpgrade(request: request)
-        }) { inbound, outbound, context in
+        ws(
+            path,
+            shouldUpgrade: { request, _ in
+                try handler.shouldUpgrade(request: request)
+            }
+        ) { inbound, outbound, context in
             let subProtocol = try handler.negotiateSubProtocol(request: context.request)
             try await handler.handleWebSocket(
                 inbound: inbound,
@@ -122,11 +130,13 @@ public extension RouterMethods where Context: WebSocketRequestContext {
     ///   - rootValue: The `rootValue` GraphQL execution arg. This is the object passed to the root resolvers.
     ///   - computeContext: A closure used to compute the GraphQL context from incoming requests. This must be provided.
     @discardableResult
-    func graphqlWebSocket<GraphQLContext: Sendable>(
+    public func graphqlWebSocket<GraphQLContext: Sendable>(
         _ path: RouterPath = "graphql",
         schema: GraphQLSchema,
         rootValue: any Sendable = (),
-        computeContext: @Sendable @escaping (GraphQLContextComputationInputs<Context, Void>) async throws -> GraphQLContext
+        computeContext:
+            @Sendable @escaping (GraphQLContextComputationInputs<Context, Void>) async throws ->
+            GraphQLContext
     ) -> Self {
         // This is just an overload that allows not passing `config`, since we cannot use a default argument that
         // uses `Context` without getting `error: generic parameter 'Self' could not be inferred` compilation errors

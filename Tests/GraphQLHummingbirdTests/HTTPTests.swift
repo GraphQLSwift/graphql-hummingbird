@@ -1,12 +1,13 @@
 import Foundation
 import GraphQL
-@testable import GraphQLHummingbird
 import GraphQLTransportWS
 import GraphQLWS
 import Hummingbird
 import HummingbirdTesting
 import NIOFoundationCompat
 import Testing
+
+@testable import GraphQLHummingbird
 
 @Suite
 struct HTTPTests {
@@ -25,7 +26,10 @@ struct HTTPTests {
                 body: .init(data: defaultJSONEncoder.encode(GraphQLRequest(query: "{ hello }")))
             ) { response in
                 #expect(response.status == .ok)
-                #expect(response.headers[.contentType] == "application/graphql-response+json; charset=utf-8")
+                #expect(
+                    response.headers[.contentType]
+                        == "application/graphql-response+json; charset=utf-8"
+                )
 
                 let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
                 #expect(result.data?["hello"] == "World")
@@ -42,7 +46,7 @@ struct HTTPTests {
                     "greet": GraphQLField(
                         type: GraphQLString,
                         args: [
-                            "name": GraphQLArgument(type: GraphQLString),
+                            "name": GraphQLArgument(type: GraphQLString)
                         ],
                         resolve: { _, args, _, _ in
                             guard let name = args["name"].string else {
@@ -50,7 +54,7 @@ struct HTTPTests {
                             }
                             return "Hello, \(name)"
                         }
-                    ),
+                    )
                 ]
             )
         )
@@ -66,13 +70,20 @@ struct HTTPTests {
                 uri: "/graphql",
                 method: .post,
                 headers: jsonGraphQLHeaders,
-                body: .init(data: defaultJSONEncoder.encode(GraphQLRequest(
-                    query: "query Greet($name: String) { greet(name: $name) }",
-                    variables: ["name": "Alice"]
-                )))
+                body: .init(
+                    data: defaultJSONEncoder.encode(
+                        GraphQLRequest(
+                            query: "query Greet($name: String) { greet(name: $name) }",
+                            variables: ["name": "Alice"]
+                        )
+                    )
+                )
             ) { response in
                 #expect(response.status == .ok)
-                #expect(response.headers[.contentType] == "application/graphql-response+json; charset=utf-8")
+                #expect(
+                    response.headers[.contentType]
+                        == "application/graphql-response+json; charset=utf-8"
+                )
 
                 let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
                 #expect(result.data?["greet"] == "Hello, Alice")
@@ -98,7 +109,7 @@ struct HTTPTests {
                             }
                             return ctx.message
                         }
-                    ),
+                    )
                 ]
             )
         )
@@ -114,10 +125,15 @@ struct HTTPTests {
                 uri: "/graphql",
                 method: .post,
                 headers: jsonGraphQLHeaders,
-                body: .init(data: defaultJSONEncoder.encode(GraphQLRequest(query: "{ contextMessage }")))
+                body: .init(
+                    data: defaultJSONEncoder.encode(GraphQLRequest(query: "{ contextMessage }"))
+                )
             ) { response in
                 #expect(response.status == .ok)
-                #expect(response.headers[.contentType] == "application/graphql-response+json; charset=utf-8")
+                #expect(
+                    response.headers[.contentType]
+                        == "application/graphql-response+json; charset=utf-8"
+                )
 
                 let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
                 #expect(result.data?["contextMessage"] == "Hello from context!")
@@ -171,7 +187,10 @@ struct HTTPTests {
                 body: .init(data: defaultJSONEncoder.encode(GraphQLRequest(query: "{ hello }")))
             ) { response in
                 #expect(response.status == .ok)
-                #expect(response.headers[.contentType] == "application/graphql-response+json; charset=utf-8")
+                #expect(
+                    response.headers[.contentType]
+                        == "application/graphql-response+json; charset=utf-8"
+                )
 
                 let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
                 #expect(result.data?["hello"] == "World")
@@ -192,7 +211,7 @@ struct HTTPTests {
                 uri: "/graphql",
                 method: .post,
                 headers: [
-                    .contentType: MediaType.applicationJsonGraphQL.description,
+                    .contentType: MediaType.applicationJsonGraphQL.description
                 ],
                 body: .init(data: defaultJSONEncoder.encode(GraphQLRequest(query: "{ hello }")))
             ) { response in
@@ -203,7 +222,8 @@ struct HTTPTests {
 
     @Test func defaultAcceptHeader() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema, config: .init(allowMissingAcceptHeader: true)) { _ in
+        router.graphql(schema: helloWorldSchema, config: .init(allowMissingAcceptHeader: true)) {
+            _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -213,12 +233,15 @@ struct HTTPTests {
                 uri: "/graphql",
                 method: .post,
                 headers: [
-                    .contentType: MediaType.applicationJsonGraphQL.description,
+                    .contentType: MediaType.applicationJsonGraphQL.description
                 ],
                 body: .init(data: defaultJSONEncoder.encode(GraphQLRequest(query: "{ hello }")))
             ) { response in
                 #expect(response.status == .ok)
-                #expect(response.headers[.contentType] == "application/graphql-response+json; charset=utf-8")
+                #expect(
+                    response.headers[.contentType]
+                        == "application/graphql-response+json; charset=utf-8"
+                )
 
                 let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
                 #expect(result.data?["hello"] == "World")
@@ -287,14 +310,17 @@ struct HTTPTests {
                 #expect(response.status == .ok)
                 var responseBuffer = response.body
                 let result = responseBuffer.readString(length: responseBuffer.readableBytes)
-                #expect(result == GraphiQLHandler.html(url: "/graphql", subscriptionUrl: "/graphql"))
+                #expect(
+                    result == GraphiQLHandler.html(url: "/graphql", subscriptionUrl: "/graphql")
+                )
             }
         }
     }
 
     @Test func graphiqlSubscription() async throws {
         let router = Router()
-        router.graphql(schema: helloWorldSchema, config: .init(subscriptionProtocols: [.websocket])) { _ in
+        router.graphql(schema: helloWorldSchema, config: .init(subscriptionProtocols: [.websocket]))
+        { _ in
             EmptyContext()
         }
         let app = Application(router: router)
@@ -307,7 +333,9 @@ struct HTTPTests {
                 #expect(response.status == .ok)
                 var responseBuffer = response.body
                 let result = responseBuffer.readString(length: responseBuffer.readableBytes)
-                #expect(result == GraphiQLHandler.html(url: "/graphql", subscriptionUrl: "/graphql"))
+                #expect(
+                    result == GraphiQLHandler.html(url: "/graphql", subscriptionUrl: "/graphql")
+                )
             }
         }
     }
@@ -334,7 +362,10 @@ struct HTTPTests {
                 body: .init(data: defaultJSONEncoder.encode(GraphQLRequest(query: "{ hello }")))
             ) { response in
                 #expect(response.status == .ok)
-                #expect(response.headers[.contentType] == "application/graphql-response+json; charset=utf-8")
+                #expect(
+                    response.headers[.contentType]
+                        == "application/graphql-response+json; charset=utf-8"
+                )
 
                 let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
                 #expect(result.data?["hello"] == "World")

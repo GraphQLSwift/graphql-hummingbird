@@ -5,13 +5,13 @@ import PackageDescription
 let package = Package(
     name: "GraphQLHummingbird",
     platforms: [
-        .macOS(.v14),
+        .macOS(.v14)
     ],
     products: [
         .library(
             name: "GraphQLHummingbird",
             targets: ["GraphQLHummingbird"]
-        ),
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
@@ -19,7 +19,10 @@ let package = Package(
         .package(url: "https://github.com/GraphQLSwift/GraphQLTransportWS.git", from: "1.0.0"),
         .package(url: "https://github.com/GraphQLSwift/GraphQLWS.git", from: "1.0.0"),
         .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0"),
-        .package(url: "https://github.com/hummingbird-project/hummingbird-websocket.git", from: "2.0.0"),
+        .package(
+            url: "https://github.com/hummingbird-project/hummingbird-websocket.git",
+            from: "2.0.0"
+        ),
     ],
     targets: [
         .target(

@@ -1,10 +1,11 @@
 import GraphQL
-import struct GraphQLTransportWS.EmptyInitPayload
-import class GraphQLTransportWS.Server
-import class GraphQLWS.Server
 import Hummingbird
 import HummingbirdWebSocket
 import Logging
+
+import struct GraphQLTransportWS.EmptyInitPayload
+import class GraphQLTransportWS.Server
+import class GraphQLWS.Server
 
 extension GraphQLHandler where Context: WebSocketRequestContext {
     func handleWebSocket(
@@ -16,25 +17,34 @@ extension GraphQLHandler where Context: WebSocketRequestContext {
     ) async throws {
         let messenger = WebSocketMessenger(outbound: outbound, logger: logger)
 
-        let messageStream = inbound.messages(maxSize: context.requestContext.maxUploadSize).compactMap { message -> String? in
-            // TODO: Add binary support
-            guard case let .text(text) = message else {
-                return nil
+        let messageStream = inbound.messages(maxSize: context.requestContext.maxUploadSize)
+            .compactMap { message -> String? in
+                // TODO: Add binary support
+                guard case .text(let text) = message else {
+                    return nil
+                }
+                logger.trace("GraphQL server received: \(message)")
+                return text
             }
-            logger.trace("GraphQL server received: \(message)")
-            return text
-        }
 
         switch subProtocol {
         case .graphqlTransportWs:
             // https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md
-            let server = GraphQLTransportWS.Server<WebSocketInit, WebSocketInitResult, AsyncThrowingStream<GraphQLResult, Error>>(
+            let server = GraphQLTransportWS.Server<
+                WebSocketInit, WebSocketInitResult, AsyncThrowingStream<GraphQLResult, Error>
+            >(
                 messenger: messenger,
                 onInit: { initPayload in
-                    try await config.websocket.onWebSocketInit(initPayload, context.request, context.requestContext)
+                    try await config.websocket.onWebSocketInit(
+                        initPayload,
+                        context.request,
+                        context.requestContext
+                    )
                 },
                 onExecute: { graphQLRequest, initResult in
-                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context, WebSocketInitResult>(
+                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<
+                        Context, WebSocketInitResult
+                    >(
                         hummingbirdRequest: context.request,
                         hummingbirdContext: context.requestContext,
                         graphQLRequest: graphQLRequest,
@@ -51,7 +61,9 @@ extension GraphQLHandler where Context: WebSocketRequestContext {
                     )
                 },
                 onSubscribe: { graphQLRequest, initResult in
-                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context, WebSocketInitResult>(
+                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<
+                        Context, WebSocketInitResult
+                    >(
                         hummingbirdRequest: context.request,
                         hummingbirdContext: context.requestContext,
                         graphQLRequest: graphQLRequest,
@@ -71,13 +83,21 @@ extension GraphQLHandler where Context: WebSocketRequestContext {
             try await server.listen(to: messageStream)
         case .graphqlWs:
             // https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md
-            let server = GraphQLWS.Server<WebSocketInit, WebSocketInitResult, AsyncThrowingStream<GraphQLResult, Error>>(
+            let server = GraphQLWS.Server<
+                WebSocketInit, WebSocketInitResult, AsyncThrowingStream<GraphQLResult, Error>
+            >(
                 messenger: messenger,
                 onInit: { initPayload in
-                    try await config.websocket.onWebSocketInit(initPayload, context.request, context.requestContext)
+                    try await config.websocket.onWebSocketInit(
+                        initPayload,
+                        context.request,
+                        context.requestContext
+                    )
                 },
                 onExecute: { graphQLRequest, initResult in
-                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context, WebSocketInitResult>(
+                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<
+                        Context, WebSocketInitResult
+                    >(
                         hummingbirdRequest: context.request,
                         hummingbirdContext: context.requestContext,
                         graphQLRequest: graphQLRequest,
@@ -94,7 +114,9 @@ extension GraphQLHandler where Context: WebSocketRequestContext {
                     )
                 },
                 onSubscribe: { graphQLRequest, initResult in
-                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context, WebSocketInitResult>(
+                    let graphQLContextComputationInputs = GraphQLContextComputationInputs<
+                        Context, WebSocketInitResult
+                    >(
                         hummingbirdRequest: context.request,
                         hummingbirdContext: context.requestContext,
                         graphQLRequest: graphQLRequest,
@@ -137,7 +159,11 @@ extension GraphQLHandler where Context: WebSocketRequestContext {
         }
         guard let subProtocol = subProtocol else {
             // If they provided options but none matched, fail
-            throw HTTPError(.badRequest, message: "Unable to negotiate subprotocol. \(WebSocketSubProtocol.allCases) are supported.")
+            throw HTTPError(
+                .badRequest,
+                message:
+                    "Unable to negotiate subprotocol. \(WebSocketSubProtocol.allCases) are supported."
+            )
         }
         return subProtocol
     }

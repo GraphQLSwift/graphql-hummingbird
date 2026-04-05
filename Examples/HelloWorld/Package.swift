@@ -5,14 +5,17 @@ import PackageDescription
 let package = Package(
     name: "HelloWorld",
     platforms: [
-        .macOS(.v14),
+        .macOS(.v14)
     ],
     dependencies: [
         .package(name: "graphql-hummingbird", path: "../../"),
         .package(url: "https://github.com/apple/swift-async-algorithms.git", from: "1.0.0"),
         .package(url: "https://github.com/GraphQLSwift/GraphQL.git", from: "4.0.0"),
         .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0"),
-        .package(url: "https://github.com/hummingbird-project/hummingbird-websocket.git", from: "2.0.0"),
+        .package(
+            url: "https://github.com/hummingbird-project/hummingbird-websocket.git",
+            from: "2.0.0"
+        ),
     ],
     targets: [
         .executableTarget(
@@ -24,6 +27,6 @@ let package = Package(
                 .product(name: "Hummingbird", package: "hummingbird"),
                 .product(name: "HummingbirdWebSocket", package: "hummingbird-websocket"),
             ]
-        ),
+        )
     ]
 )

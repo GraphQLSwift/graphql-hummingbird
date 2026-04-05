@@ -1,12 +1,13 @@
 import Foundation
 import GraphQL
-@testable import GraphQLHummingbird
 import GraphQLTransportWS
 import GraphQLWS
 import Hummingbird
 import HummingbirdTesting
 import NIOFoundationCompat
 import Testing
+
+@testable import GraphQLHummingbird
 
 /// Validates status code behavior for the `application/json` media type.
 ///
@@ -67,7 +68,11 @@ struct HTTPStatusCodeJSONTests {
                 method: .post,
                 headers: jsonHeaders,
                 // Fails "No Unused Variables" validation rule
-                body: .init(data: #require(#"{"query": "query A($name: String) { hello }"}"#.data(using: .utf8)))
+                body: .init(
+                    data: #require(
+                        #"{"query": "query A($name: String) { hello }"}"#.data(using: .utf8)
+                    )
+                )
             ) { response in
                 #expect(response.status == .ok)
             }
@@ -103,7 +108,7 @@ struct HTTPStatusCodeJSONTests {
                     "get": GraphQLField(
                         type: GraphQLString,
                         args: [
-                            "name": GraphQLArgument(type: GraphQLString),
+                            "name": GraphQLArgument(type: GraphQLString)
                         ],
                         resolve: { _, args, _, _ in
                             guard let name = args["name"].string else {
@@ -111,7 +116,7 @@ struct HTTPStatusCodeJSONTests {
                             }
                             return name
                         }
-                    ),
+                    )
                 ]
             )
         )
@@ -126,9 +131,12 @@ struct HTTPStatusCodeJSONTests {
                 uri: "/graphql",
                 method: .post,
                 headers: jsonHeaders,
-                body: .init(data: #require(
-                    #"{"query": "query getName($name: String!) { get(name: $name) }", "variables": { "name": null }}"#.data(using: .utf8)
-                ))
+                body: .init(
+                    data: #require(
+                        #"{"query": "query getName($name: String!) { get(name: $name) }", "variables": { "name": null }}"#
+                            .data(using: .utf8)
+                    )
+                )
             ) { response in
                 #expect(response.status == .ok)
             }
@@ -166,7 +174,7 @@ struct HTTPStatusCodeJSONTests {
                         resolve: { _, _, _, _ in
                             throw GraphQLError(message: "Something went wrong")
                         }
-                    ),
+                    )
                 ]
             )
         )
@@ -184,7 +192,10 @@ struct HTTPStatusCodeJSONTests {
                 body: .init(data: defaultJSONEncoder.encode(GraphQLRequest(query: "{ error }")))
             ) { response in
                 #expect(response.status == .ok)
-                #expect(response.headers[.contentType] == "application/graphql-response+json; charset=utf-8")
+                #expect(
+                    response.headers[.contentType]
+                        == "application/graphql-response+json; charset=utf-8"
+                )
 
                 let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
                 #expect(!result.errors.isEmpty)
