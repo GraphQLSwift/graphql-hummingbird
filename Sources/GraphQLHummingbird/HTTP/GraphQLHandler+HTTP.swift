@@ -24,7 +24,9 @@ extension GraphQLHandler {
         guard operationType != .mutation else {
             throw HTTPError(.methodNotAllowed, message: "Mutations using GET are disallowed")
         }
-        let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context, WebSocketInitResult>(
+        let graphQLContextComputationInputs = GraphQLContextComputationInputs<
+            Context, WebSocketInitResult
+        >(
             hummingbirdRequest: request,
             hummingbirdContext: context,
             graphQLRequest: graphQLRequest,
@@ -50,13 +52,21 @@ extension GraphQLHandler {
         switch mediaType {
         case .applicationJson, .applicationJsonGraphQL:
             do {
-                graphQLRequest = try await config.coders.jsonDecoder.decode(GraphQLRequest.self, from: request, context: context)
+                graphQLRequest = try await config.coders.jsonDecoder.decode(
+                    GraphQLRequest.self,
+                    from: request,
+                    context: context
+                )
             } catch {
                 throw HTTPError(.badRequest, message: error.localizedDescription)
             }
         case .applicationUrlEncoded:
             do {
-                graphQLRequest = try await config.coders.urlEncodedFormDecoder.decode(GraphQLRequest.self, from: request, context: context)
+                graphQLRequest = try await config.coders.urlEncodedFormDecoder.decode(
+                    GraphQLRequest.self,
+                    from: request,
+                    context: context
+                )
             } catch {
                 throw HTTPError(.badRequest, message: error.localizedDescription)
             }
@@ -64,7 +74,9 @@ extension GraphQLHandler {
             throw HTTPError(.unsupportedMediaType)
         }
 
-        let graphQLContextComputationInputs = GraphQLContextComputationInputs<Context, WebSocketInitResult>(
+        let graphQLContextComputationInputs = GraphQLContextComputationInputs<
+            Context, WebSocketInitResult
+        >(
             hummingbirdRequest: request,
             hummingbirdContext: context,
             graphQLRequest: graphQLRequest,
@@ -103,13 +115,18 @@ extension GraphQLHandler {
             // This indicates a request parsing error
             return GraphQLResult(data: nil, errors: [error])
         } catch {
-            return GraphQLResult(data: nil, errors: [GraphQLError(message: error.localizedDescription)])
+            return GraphQLResult(
+                data: nil,
+                errors: [GraphQLError(message: error.localizedDescription)]
+            )
         }
         return result
     }
 
     /// https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#body
-    private func encodeResponse(result: GraphQLResult, request: Request, context: Context) throws -> Response {
+    private func encodeResponse(result: GraphQLResult, request: Request, context: Context) throws
+        -> Response
+    {
         let acceptHeader = request.headers[.accept]
 
         if !config.allowMissingAcceptHeader, acceptHeader == nil {
@@ -121,19 +138,31 @@ extension GraphQLHandler {
         // Try to respond with the best matching media type, in order
         for mediaType in acceptedTypes {
             if MediaType.applicationJsonGraphQL.isType(mediaType) {
-                return try config.coders.graphQLJSONEncoder.encode(result, from: request, context: context)
+                return try config.coders.graphQLJSONEncoder.encode(
+                    result,
+                    from: request,
+                    context: context
+                )
             }
             if MediaType.applicationJson.isType(mediaType) {
                 return try config.coders.jsonEncoder.encode(result, from: request, context: context)
             }
             if MediaType.applicationUrlEncoded.isType(mediaType) {
-                return try config.coders.urlEncodedFormEncoder.encode(result, from: request, context: context)
+                return try config.coders.urlEncodedFormEncoder.encode(
+                    result,
+                    from: request,
+                    context: context
+                )
             }
         }
 
         // Use the default if configured to do so
         if config.allowMissingAcceptHeader {
-            return try config.coders.graphQLJSONEncoder.encode(result, from: request, context: context)
+            return try config.coders.graphQLJSONEncoder.encode(
+                result,
+                from: request,
+                context: context
+            )
         }
 
         // Fail
@@ -143,7 +172,8 @@ extension GraphQLHandler {
     private func parseAcceptHeader(_ header: String?) -> [MediaType] {
         guard let header = header else { return [] }
 
-        return header
+        return
+            header
             .split(separator: ",")
             .compactMap { segment in
                 MediaType(from: segment.trimmingCharacters(in: .whitespaces))

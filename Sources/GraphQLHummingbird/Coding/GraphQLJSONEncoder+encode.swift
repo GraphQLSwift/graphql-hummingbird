@@ -7,7 +7,9 @@ extension GraphQLJSONEncoder: @retroactive ResponseEncoder {
     ///   - value: Value to encode
     ///   - request: Request used to generate response
     ///   - context: Request context
-    public func encode(_ value: some Encodable, from request: Request, context: some RequestContext) throws -> Response {
+    public func encode(_ value: some Encodable, from request: Request, context: some RequestContext)
+        throws -> Response
+    {
         try encode(value, status: .ok, from: request, context: context)
     }
 }
@@ -20,7 +22,12 @@ extension GraphQLJSONEncoder {
     ///   - status: The status of the response
     ///   - request: Request used to generate response
     ///   - context: Request context
-    func encode(_ value: some Encodable, status: HTTPResponse.Status, from _: Request, context _: some RequestContext) throws -> Response {
+    func encode(
+        _ value: some Encodable,
+        status: HTTPResponse.Status,
+        from _: Request,
+        context _: some RequestContext
+    ) throws -> Response {
         let data = try encode(value)
         let buffer = ByteBuffer(bytes: data)
         return Response(
@@ -40,7 +47,9 @@ extension GraphQLJSONEncoder {
     ///   - value: GraphQLResult to encode
     ///   - request: Request used to generate response
     ///   - context: Request context
-    func encode(_ value: GraphQLResult, from request: Request, context: some RequestContext) throws -> Response {
+    func encode(_ value: GraphQLResult, from request: Request, context: some RequestContext) throws
+        -> Response
+    {
         var status = HTTPResponse.Status.ok
         // We must return `bad request` with the content if there were failures preventing a partial result
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#applicationgraphql-responsejson
