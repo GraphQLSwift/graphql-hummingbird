@@ -3,6 +3,7 @@ import Hummingbird
 import HummingbirdWebSocket
 import Logging
 
+import struct Foundation.Data
 import struct GraphQLTransportWS.EmptyInitPayload
 import class GraphQLTransportWS.Server
 import class GraphQLWS.Server
@@ -17,15 +18,16 @@ extension GraphQLHandler where Context: WebSocketRequestContext {
     ) async throws {
         let messenger = WebSocketMessenger(outbound: outbound, logger: logger)
 
-        let messageStream = inbound.messages(maxSize: context.requestContext.maxUploadSize)
-            .compactMap { message -> String? in
-                // TODO: Add binary support
-                guard case .text(let text) = message else {
-                    return nil
-                }
-                logger.trace("GraphQL server received: \(message)")
-                return text
+        let messageStream = inbound.messages(
+            maxSize: context.requestContext.maxUploadSize
+        ).compactMap { message -> Data? in
+            // By subprotocol specs, messages must be `text` and UTF8
+            guard case .text(let text) = message else {
+                return nil
             }
+            logger.trace("GraphQL server received: \(text)")
+            return text.data(using: .utf8)
+        }
 
         switch subProtocol {
         case .graphqlTransportWs:

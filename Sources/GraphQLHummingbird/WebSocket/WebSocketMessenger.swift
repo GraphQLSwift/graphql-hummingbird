@@ -3,6 +3,9 @@ import GraphQLWS
 import HummingbirdWebSocket
 import Logging
 import NIOCore
+import NIOFoundationCompat
+
+import struct Foundation.Data
 
 /// Messenger wrapper for WebSockets
 class WebSocketMessenger: GraphQLTransportWS.Messenger, GraphQLWS.Messenger, @unchecked Sendable {
@@ -17,9 +20,11 @@ class WebSocketMessenger: GraphQLTransportWS.Messenger, GraphQLWS.Messenger, @un
         self.logger = logger
     }
 
-    func send<S: Collection>(_ message: S) async throws where S.Element == Character {
-        logger.trace("GraphQL server sent: \(String(message))")
-        try await outbound.write(.text(String(message)))
+    func send(_ message: Data) async throws {
+        try await outbound.withTextMessageWriter { writer in
+            try await writer.callAsFunction(ByteBuffer(data: message))
+        }
+        logger.trace("GraphQL server sent: \(String(decoding: message, as: UTF8.self))")
     }
 
     func error(_ message: String, code: Int) async throws {

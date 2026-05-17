@@ -1,5 +1,5 @@
 {
-  "originHash" : "f2124c90d97730f0c1ccfefce1998ffd49b45cc9e2a3815bb08e726361f2b6ce",
+  "originHash" : "2a0d12dffb76bc194e23d22feb1b8acb69d315f8f87b13e43ac7c7550845bf2e",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GraphQLSwift/Graphiti.git",
       "state" : {
-        "revision" : "a23a3d232df202fc158ad2d698926325b470523c",
-        "version" : "3.0.0"
+        "revision" : "3ec7bf90d9884324852af9d96d2ce5aa60e02cde",
+        "version" : "3.1.0"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GraphQLSwift/GraphQLTransportWS.git",
       "state" : {
-        "revision" : "6d62d9f980346f0644a5f4dc1593f2b0f1d07b44",
-        "version" : "1.0.0"
+        "revision" : "1fb0dbdec9bc220949370de3024c525c99b754f4",
+        "version" : "2.0.0"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/GraphQLSwift/GraphQLWS.git",
       "state" : {
-        "revision" : "5a3b62e478668199d22f52df7cc7d44b51394cb4",
-        "version" : "1.0.0"
+        "revision" : "038a19b365faa9dc6d225a9499e8cfd992c996fa",
+        "version" : "2.0.0"
       }
     },
     {
@@ -125,15 +125,6 @@
       "state" : {
         "revision" : "7b847a3b7008b2dc2f47ca3110d8c782fb2e5c7e",
         "version" : "1.3.0"
-      }
-    },
-    {
-      "identity" : "swift-configuration",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-configuration.git",
-      "state" : {
-        "revision" : "b4768bd68d8a6fb356bd372cb41905046244fcae",
-        "version" : "1.0.2"
       }
     },
     {
