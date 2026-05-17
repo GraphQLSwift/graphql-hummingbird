@@ -16,8 +16,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
         .package(url: "https://github.com/GraphQLSwift/GraphQL.git", from: "4.0.0"),
-        .package(url: "https://github.com/GraphQLSwift/GraphQLTransportWS.git", from: "1.0.0"),
-        .package(url: "https://github.com/GraphQLSwift/GraphQLWS.git", from: "1.0.0"),
+        .package(url: "https://github.com/GraphQLSwift/GraphQLTransportWS.git", from: "2.0.0"),
+        .package(url: "https://github.com/GraphQLSwift/GraphQLWS.git", from: "2.0.0"),
         .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0"),
         .package(
             url: "https://github.com/hummingbird-project/hummingbird-websocket.git",
@@ -33,6 +33,7 @@ let package = Package(
                 .product(name: "GraphQLWS", package: "GraphQLWS"),
                 .product(name: "Hummingbird", package: "hummingbird"),
                 .product(name: "HummingbirdWebSocket", package: "hummingbird-websocket"),
+                .product(name: "NIOFoundationCompat", package: "swift-nio"),
             ]
         ),
         .testTarget(
