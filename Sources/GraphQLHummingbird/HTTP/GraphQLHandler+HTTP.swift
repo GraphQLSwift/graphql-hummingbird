@@ -6,13 +6,39 @@ import NIOCore
 
 extension GraphQLHandler {
     /// https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#get
-    func handleGet(request: Request, context: Context) async throws -> Response {
+    func handleGet(request: Request, context: Context, jsonDecoder: JSONDecoder) async throws
+        -> Response
+    {
         guard config.allowGet else {
             throw HTTPError(.methodNotAllowed, message: "GET requests are disallowed")
         }
 
         // Decode query parameters as GraphQLRequest
-        let graphQLRequest = try request.uri.decodeQuery(as: GraphQLRequest.self, context: context)
+        let queryParameters = request.uri.queryParameters
+        guard let query = queryParameters.get("query") else {
+            throw HTTPError(.badRequest, message: "`query` parameter is required")
+        }
+        let variables: [String: Map]
+        if let queryVariables = queryParameters.get("variables") {
+            do {
+                variables = try jsonDecoder.decode(
+                    [String: Map].self,
+                    from: Data(queryVariables.utf8)
+                )
+            } catch {
+                throw HTTPError(
+                    .badRequest,
+                    message: "`variable` parameter could not be decoded: \(error)"
+                )
+            }
+        } else {
+            variables = [:]
+        }
+        let graphQLRequest = GraphQLRequest(
+            query: query,
+            operationName: queryParameters.get("operationName"),
+            variables: variables
+        )
 
         let operationType: OperationType
         do {
