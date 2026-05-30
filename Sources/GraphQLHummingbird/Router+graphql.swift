@@ -53,7 +53,11 @@ extension RouterMethods {
             }
 
             // Normal GET request handling
-            return try await handler.handleGet(request: request, context: context)
+            return try await handler.handleGet(
+                request: request,
+                context: context,
+                jsonDecoder: config.coders.jsonDecoder
+            )
         }
 
         post(path) { request, context in

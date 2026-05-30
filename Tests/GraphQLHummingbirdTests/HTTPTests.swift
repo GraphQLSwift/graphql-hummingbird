@@ -272,6 +272,29 @@ struct HTTPTests {
         }
     }
 
+    @Test func getRequestParsesEmtpyVariables() async throws {
+        let router = Router()
+        router.graphql(schema: helloWorldSchema) { _ in
+            EmptyContext()
+        }
+        let app = Application(router: router)
+
+        try await app.test(.router) { client in
+            try await client.execute(
+                uri: "/graphql?query=%7Bhello%7D&variables=%7B%7D",
+                method: .get,
+                headers: jsonGraphQLHeaders
+            ) { response in
+                var body = response.body
+                #expect(response.status == .ok)
+
+                let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
+                #expect(result.data?["hello"] == "World")
+                #expect(result.errors.isEmpty)
+            }
+        }
+    }
+
     @Test func disallowGetRequest() async throws {
         let router = Router()
         router.graphql(
