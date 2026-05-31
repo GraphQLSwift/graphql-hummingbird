@@ -295,6 +295,104 @@ struct HTTPTests {
         }
     }
 
+    @Test func getQueryWithVariables() async throws {
+        let router = Router()
+        router.graphql(schema: helloWorldSchema) { _ in
+            EmptyContext()
+        }
+        let app = Application(router: router)
+
+        try await app.test(.router) { client in
+            try await client.execute(
+                uri: "/graphql?query=query%20Greet(%24name%3A%20String)%20%7B%20hello(name%3A%20%24name)%20%7D&variables=%7B%22name%22%3A%22Alice%22%7D",
+                method: .get,
+                headers: jsonGraphQLHeaders
+            ) { response in
+                #expect(response.status == .ok)
+
+                let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
+                #expect(result.data?["hello"] == "Hello, Alice")
+                #expect(result.errors.isEmpty)
+            }
+        }
+    }
+
+    @Test func getQueryWithOperationName() async throws {
+        let router = Router()
+        router.graphql(schema: helloWorldSchema) { _ in
+            EmptyContext()
+        }
+        let app = Application(router: router)
+
+        try await app.test(.router) { client in
+            try await client.execute(
+                uri: "/graphql?query=query%20Greet%20%7B%20hello%20%7D%20query%20Farewell%20%7B%20hello%20%7D&operationName=Greet",
+                method: .get,
+                headers: jsonGraphQLHeaders
+            ) { response in
+                #expect(response.status == .ok)
+
+                let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
+                #expect(result.data?["hello"] == "World")
+                #expect(result.errors.isEmpty)
+            }
+        }
+    }
+
+    @Test func getQueryMissingQueryParameter() async throws {
+        let router = Router()
+        router.graphql(schema: helloWorldSchema, config: .init(ide: .none)) { _ in
+            EmptyContext()
+        }
+        let app = Application(router: router)
+
+        try await app.test(.router) { client in
+            try await client.execute(
+                uri: "/graphql",
+                method: .get,
+                headers: jsonGraphQLHeaders
+            ) { response in
+                #expect(response.status == .badRequest)
+            }
+        }
+    }
+
+    @Test func getQueryWithInvalidVariables() async throws {
+        let router = Router()
+        router.graphql(schema: helloWorldSchema) { _ in
+            EmptyContext()
+        }
+        let app = Application(router: router)
+
+        try await app.test(.router) { client in
+            try await client.execute(
+                uri: "/graphql?query=%7Bhello%7D&variables=not-valid-json",
+                method: .get,
+                headers: jsonGraphQLHeaders
+            ) { response in
+                #expect(response.status == .badRequest)
+            }
+        }
+    }
+
+    @Test func getMutationDisallowed() async throws {
+        let router = Router()
+        router.graphql(schema: helloWorldSchema) { _ in
+            EmptyContext()
+        }
+        let app = Application(router: router)
+
+        try await app.test(.router) { client in
+            try await client.execute(
+                uri: "/graphql?query=mutation%20%7B%20createSomething%20%7D",
+                method: .get,
+                headers: jsonGraphQLHeaders
+            ) { response in
+                #expect(response.status == .methodNotAllowed)
+            }
+        }
+    }
+
     @Test func disallowGetRequest() async throws {
         let router = Router()
         router.graphql(

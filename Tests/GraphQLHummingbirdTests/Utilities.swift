@@ -17,8 +17,14 @@ let helloWorldSchema = try! GraphQLSchema(
         fields: [
             "hello": GraphQLField(
                 type: GraphQLString,
-                resolve: { _, _, _, _ in
-                    "World"
+                args: [
+                    "name": GraphQLArgument(type: GraphQLString)
+                ],
+                resolve: { _, args, _, _ in
+                    guard let name = args["name"].string else {
+                        return "World"
+                    }
+                    return "Hello, \(name)"
                 }
             )
         ]
