@@ -285,7 +285,6 @@ struct HTTPTests {
                 method: .get,
                 headers: jsonGraphQLHeaders
             ) { response in
-                var body = response.body
                 #expect(response.status == .ok)
 
                 let result = try defaultJSONDecoder.decode(GraphQLResult.self, from: response.body)
