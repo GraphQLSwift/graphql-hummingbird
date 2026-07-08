@@ -149,13 +149,9 @@ extension GraphQLHandler {
         // https://github.com/graphql/graphql-over-http/blob/main/spec/GraphQLOverHTTP.md#validation
 
         // Validate schema
-        do {
-            let schemaValidationErrors = try validateSchema(schema: schema)
-            guard schemaValidationErrors.isEmpty else {
-                return GraphQLResult(errors: schemaValidationErrors)
-            }
-        } catch {
-            return GraphQLResult(errors: [GraphQLError(error)])
+        let schemaValidationErrors = validateSchema(schema: schema)
+        guard schemaValidationErrors.isEmpty else {
+            return GraphQLResult(errors: schemaValidationErrors)
         }
 
         // Validate request
